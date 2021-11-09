@@ -7,5 +7,3 @@ from django.contrib.auth.admin import UserAdmin
 from . import models
 
 admin.site.register(models.User, UserAdmin)
-
-# git remote add origin https://github.com/nebeedtp/miniwallet
