@@ -1,14 +1,10 @@
 import datetime
 
-
 from django.db import transaction
 from django.db.models import F
 
-
-
 from .models import User,MyWallet
-from .serializers import TokenSerializer,WalletSerilizer,ViewWalletSerilizer,DepositSerializer,WithdrawalSerializer
-
+from .serializers import TokenSerializer,WalletSerializer,ViewWalletSerializer,DepositSerializer,WithdrawalSerializer
 
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -43,7 +39,7 @@ class WalletView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         context = {'request': self.request}
-        serializer = ViewWalletSerilizer(data = request.data, context = context)
+        serializer = ViewWalletSerializer(data = request.data, context = context)
         if serializer.is_valid():
             user = request.user
             wallet_data = MyWallet.objects.get(user_id = user)
@@ -64,7 +60,7 @@ class WalletView(APIView):
     def post(self, request):
         current_time = datetime.datetime.now()
         context = {'request': self.request}
-        serializer = WalletSerilizer(data = request.data, context = context)
+        serializer = WalletSerializer(data = request.data, context = context)
         if serializer.is_valid():
             user = request.user
             wallet_data = MyWallet.objects.get(user_id = user)

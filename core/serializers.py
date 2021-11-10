@@ -1,6 +1,8 @@
 from django.db.models import fields
-from rest_framework import serializers
+
 from .models import User,MyWallet,WalletTransactions
+
+from rest_framework import serializers
 
 class TokenSerializer(serializers.Serializer):
 
@@ -12,16 +14,8 @@ class TokenSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid Customer XID")
         return data
 
-class EnableWalletSerilizer(serializers.Serializer):
 
-    def validate(self, data):
-        user =  self.context['request'].user
-        wallet_already_enabled = MyWallet.objects.filter(user_id = user, status = "enabled").count()
-        if wallet_already_enabled:
-            raise serializers.ValidationError("Wallet Alreaady Enabled")
-        return data
-
-class WalletSerilizer(serializers.Serializer):
+class WalletSerializer(serializers.Serializer):
 
     def validate(self, data):
         user =  self.context['request'].user
@@ -30,7 +24,7 @@ class WalletSerilizer(serializers.Serializer):
             raise serializers.ValidationError("Wallet not exists for this user")
         return data
 
-class ViewWalletSerilizer(serializers.Serializer):
+class ViewWalletSerializer(serializers.Serializer):
 
     def validate(self, data):
         user =  self.context['request'].user

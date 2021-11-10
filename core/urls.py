@@ -1,8 +1,5 @@
-
-
 from django.urls import path
 from . import views
-
 
 urlpatterns = [
     path('init', views.TokenView.as_view(), name='init'),
