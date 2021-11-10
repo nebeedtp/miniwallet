@@ -4,7 +4,7 @@ from django.db import transaction
 from django.db.models import F
 
 from .models import User,MyWallet
-from .serializers import TokenSerializer,WalletSerializer,ViewWalletSerializer,DepositSerializer,WithdrawalSerializer
+from .serializers import TokenSerializer,WalletSerializer,ViewWalletSerializer,DepositSerializer,WithdrawalSerializer, DisableWalletSerializer
 
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -52,7 +52,7 @@ class WalletView(APIView):
                     "balance" : wallet_data.balance,
                 }
             }
-            content = {'message': 'success', 'data' : data}
+            content = {'status': 'success', 'data' : data}
             return Response(content)
 
         return Response(serializer.errors)
@@ -64,34 +64,45 @@ class WalletView(APIView):
         if serializer.is_valid():
             user = request.user
             wallet_data = MyWallet.objects.get(user_id = user)
-            if wallet_data.status == "enabled":
-                wallet_data.status = "disabled"
-                wallet_data.disabled_at = current_time
-                wallet_data.save()
-                data = {
-                    "wallet" : {
-                        "id" : wallet_data.id,
-                        "owned_by" : wallet_data.user_id.customer_xid, 
-                        "status": "disabled",
-                        "disabled_at": current_time,
-                        "balance" : wallet_data.balance,
-                    }
+            wallet_data.status = "enabled"
+            wallet_data.enabled_at = current_time
+            wallet_data.save()
+            data = {
+                "wallet" : {
+                    "id" : wallet_data.id,
+                    "owned_by" : wallet_data.user_id.customer_xid,
+                    "status": wallet_data.status,
+                    "enabled_at": wallet_data.enabled_at,
+                    "balance" : wallet_data.balance,
                 }
-            else:
-                wallet_data.status = "enabled"
-                wallet_data.enabled_at = current_time
-                wallet_data.save()
-                data = {
-                    "wallet" : {
-                        "id" : wallet_data.id,
-                        "owned_by" : wallet_data.user_id.customer_xid,
-                        "status": "enabled",
-                        "enabled_at": current_time,
-                        "balance" : wallet_data.balance,
-                    }
-                }
+            }
 
-            content = {'message': 'success', 'data' : data}
+            content = {'status': 'success', 'data' : data}
+            return Response(content)
+
+        return Response(serializer.errors)
+
+    def patch(self, request):
+        current_time = datetime.datetime.now()
+        context = {'request': self.request}
+        serializer = DisableWalletSerializer(data = request.data, context = context)
+        if serializer.is_valid():
+            user = request.user
+            wallet_data = MyWallet.objects.get(user_id = user)
+            wallet_data.status = "disabled"
+            wallet_data.disabled_at = current_time
+            wallet_data.save()
+            data = {
+                "wallet" : {
+                    "id" : wallet_data.id,
+                    "owned_by" : wallet_data.user_id.customer_xid,
+                    "status": wallet_data.status,
+                    "disabled_at": wallet_data.disabled_at,
+                    "balance" : wallet_data.balance,
+                }
+            }
+
+            content = {'status': 'success', 'data' : data}
             return Response(content)
 
         return Response(serializer.errors)

@@ -24,4 +24,4 @@ class WalletTransactions(models.Model):
     status = models.CharField(max_length=10)
     type = models.CharField(max_length=10)
     date_added = models.DateTimeField(null=True)
-    reference_id = models.CharField(max_length=100, blank=True, unique=True, default=uuid.uuid4)
+    reference_id = models.CharField(max_length=100, blank=True, default=uuid.uuid4)
